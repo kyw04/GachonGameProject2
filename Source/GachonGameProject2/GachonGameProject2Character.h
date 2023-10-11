@@ -32,6 +32,8 @@ class AGachonGameProject2Character : public ACharacter
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SprintAction;
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -50,15 +52,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float Stamina = 100.0f;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
+	float RestTime = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Info")
+	float StartRecoveryStaminaTime = 1.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bOnSprint;
+
+
 protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
+	void OnSprint();
+	void EndSprint();
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 	
 	void Jump();
+
 
 protected:
 	// APawn interface
@@ -66,6 +81,8 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
+
+	virtual void Tick(float DeltaTime);
 
 public:
 	/** Returns CameraBoom subobject **/

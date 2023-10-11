@@ -16,6 +16,7 @@
 
 AGachonGameProject2Character::AGachonGameProject2Character()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -50,6 +51,12 @@ AGachonGameProject2Character::AGachonGameProject2Character()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
+void AGachonGameProject2Character::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	RestTime += DeltaTime * 5.0f;
+}
 
 void AGachonGameProject2Character::BeginPlay()
 {
@@ -80,45 +87,65 @@ void AGachonGameProject2Character::SetupPlayerInputComponent(class UInputCompone
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Move);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AGachonGameProject2Character::OnSprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AGachonGameProject2Character::EndSprint);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Look);
-
 	}
 
 }
 
 void AGachonGameProject2Character::Jump()
 {
-	if (Stamina <= 0)
+	if (Stamina < 5.0f)
 		return;
 		
+	RestTime = 0.0f;
 	if (ACharacter::JumpKeyHoldTime == 0)
-		Stamina -= 10.0f;
+	{
+		Stamina -= 5.0f;
+		if (Stamina < 0.0f)
+			Stamina = 0.0f;
+	}
 
 	ACharacter::Jump();
 }
 
 void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 {
-	if (Stamina <= 0)
+	if (Stamina <= 0.1f)
 		return;
+	
+	RestTime = 0.0f;
 
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
+	MovementVector = MovementVector.GetSafeNormal();
 
 	if (Controller != nullptr)
 	{
-		Stamina -= 0.1f;
+		float speed = 0.5f;
+		UE_LOG(LogTemp, Log, TEXT("%s"), bOnSprint ? TEXT("true") : TEXT("flse"));
+		if (bOnSprint)
+		{
+			//UE_LOG(LogTemp, Log, TEXT("sprint"));
+			Stamina -= 0.1f;
+			if (Stamina < 0.0f)
+				Stamina = 0.0f;
+
+			speed = 1.0f;
+		}
+
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) * speed;
 	
 		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y) * speed;
 
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
@@ -126,8 +153,24 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 	}
 }
 
+void AGachonGameProject2Character::OnSprint()
+{
+	bOnSprint = true;
+	UE_LOG(LogTemp, Log, TEXT("OnSprint"));
+}
+
+void AGachonGameProject2Character::EndSprint()
+{
+	bOnSprint = false;
+	UE_LOG(LogTemp, Log, TEXT("EndSprint"));
+}
+
+
 void AGachonGameProject2Character::Look(const FInputActionValue& Value)
 {
+	if (Stamina <= 0.1f)
+		return;
+
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
