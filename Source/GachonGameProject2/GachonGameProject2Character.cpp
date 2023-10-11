@@ -55,6 +55,8 @@ void AGachonGameProject2Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	RecoveryStamina = StaminaPerSecond * DeltaTime;
+	SprintStamina = 1.0f * DeltaTime;
 	RestTime += DeltaTime * 5.0f;
 }
 
@@ -102,7 +104,7 @@ void AGachonGameProject2Character::Jump()
 		return;
 		
 	RestTime = 0.0f;
-	if (ACharacter::JumpKeyHoldTime == 0)
+	if (ACharacter::JumpKeyHoldTime == 0 && ACharacter::CanJump())
 	{
 		Stamina -= 5.0f;
 		if (Stamina < 0.0f)
@@ -114,7 +116,7 @@ void AGachonGameProject2Character::Jump()
 
 void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 {
-	if (Stamina <= 0.1f)
+	if (Stamina < 0.1f)
 		return;
 	
 	RestTime = 0.0f;
@@ -130,7 +132,7 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 		if (bOnSprint)
 		{
 			//UE_LOG(LogTemp, Log, TEXT("sprint"));
-			Stamina -= 0.1f;
+			Stamina -= SprintStamina;
 			if (Stamina < 0.0f)
 				Stamina = 0.0f;
 
@@ -168,9 +170,6 @@ void AGachonGameProject2Character::EndSprint()
 
 void AGachonGameProject2Character::Look(const FInputActionValue& Value)
 {
-	if (Stamina <= 0.1f)
-		return;
-
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 

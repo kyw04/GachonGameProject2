@@ -52,6 +52,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float Stamina = 100.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
+	float StaminaPerSecond = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
+	float RecoveryStamina = 0.0f;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float RestTime = 0.0f;
@@ -60,6 +66,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bOnSprint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SprintStamina;
 
 
 protected:
