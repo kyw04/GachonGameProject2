@@ -39,6 +39,9 @@ class AGachonGameProject2Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* AttackActon;
+
 	
 public:
 	AGachonGameProject2Character();
@@ -83,6 +86,7 @@ protected:
 	
 	void Jump();
 
+	void Attack(const FInputActionValue& Value);
 
 protected:
 	// APawn interface

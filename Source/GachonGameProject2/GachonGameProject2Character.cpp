@@ -94,6 +94,9 @@ void AGachonGameProject2Character::SetupPlayerInputComponent(class UInputCompone
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Look);
+
+		//Attack
+		EnhancedInputComponent->BindAction(AttackActon, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Attack);
 	}
 
 }
@@ -118,8 +121,6 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 {
 	if (Stamina < 0.1f)
 		return;
-	
-	RestTime = 0.0f;
 
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -128,9 +129,10 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		float speed = 0.5f;
-		UE_LOG(LogTemp, Log, TEXT("%s"), bOnSprint ? TEXT("true") : TEXT("flse"));
+		//UE_LOG(LogTemp, Log, TEXT("%s"), bOnSprint ? TEXT("true") : TEXT("flse"));
 		if (bOnSprint)
 		{
+			RestTime = 0.0f;
 			//UE_LOG(LogTemp, Log, TEXT("sprint"));
 			Stamina -= SprintStamina;
 			if (Stamina < 0.0f)
@@ -158,13 +160,13 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 void AGachonGameProject2Character::OnSprint()
 {
 	bOnSprint = true;
-	UE_LOG(LogTemp, Log, TEXT("OnSprint"));
+	//UE_LOG(LogTemp, Log, TEXT("OnSprint"));
 }
 
 void AGachonGameProject2Character::EndSprint()
 {
 	bOnSprint = false;
-	UE_LOG(LogTemp, Log, TEXT("EndSprint"));
+	//UE_LOG(LogTemp, Log, TEXT("EndSprint"));
 }
 
 
@@ -179,5 +181,12 @@ void AGachonGameProject2Character::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AGachonGameProject2Character::Attack(const FInputActionValue& Value)
+{
+	FVector2D AttackHand = Value.Get<FVector2D>();
+
+	UE_LOG(LogTemp, Log, TEXT("%f"), AttackHand.X + AttackHand.Y);
 }
 
