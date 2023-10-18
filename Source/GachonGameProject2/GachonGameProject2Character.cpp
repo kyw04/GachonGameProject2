@@ -55,9 +55,22 @@ void AGachonGameProject2Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (State == EState::Groggy)
+	{
+		RestTime += DeltaTime * 2.5f;
+		if (RestTime >= StartRecoveryStaminaTime)
+		{
+			State = EState::Idle;
+		}
+	}
+	else
+	{
+		RestTime += DeltaTime * 5.0f;
+	}
+
 	RecoveryStamina = StaminaPerSecond * DeltaTime;
 	SprintStamina = 1.0f * DeltaTime;
-	RestTime += DeltaTime * 5.0f;
+	
 }
 
 void AGachonGameProject2Character::BeginPlay()
@@ -101,6 +114,12 @@ void AGachonGameProject2Character::SetupPlayerInputComponent(class UInputCompone
 
 }
 
+void AGachonGameProject2Character::StaminaIsZero()
+{
+	Stamina = 0.0f;
+	State = EState::Groggy;
+}
+
 void AGachonGameProject2Character::Jump()
 {
 	if (Stamina < 5.0f)
@@ -111,7 +130,10 @@ void AGachonGameProject2Character::Jump()
 	{
 		Stamina -= 5.0f;
 		if (Stamina < 0.0f)
-			Stamina = 0.0f;
+		{
+			StaminaIsZero();
+			return;
+		}
 	}
 
 	ACharacter::Jump();
@@ -119,7 +141,7 @@ void AGachonGameProject2Character::Jump()
 
 void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 {
-	if (Stamina < 0.1f)
+	if (State != EState::Idle)
 		return;
 
 	// input is a Vector2D
@@ -129,14 +151,19 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		float speed = 0.5f;
+		State = EState::Walk;
 		//UE_LOG(LogTemp, Log, TEXT("%s"), bOnSprint ? TEXT("true") : TEXT("flse"));
 		if (bOnSprint)
 		{
 			RestTime = 0.0f;
+			State = EState::Run;
 			//UE_LOG(LogTemp, Log, TEXT("sprint"));
 			Stamina -= SprintStamina;
-			if (Stamina < 0.0f)
-				Stamina = 0.0f;
+			if (Stamina <= 0.0f)
+			{
+				StaminaIsZero();
+				return;
+			}
 
 			speed = 1.0f;
 		}
@@ -155,6 +182,8 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+
+	State = EState::Idle;
 }
 
 void AGachonGameProject2Character::OnSprint()
