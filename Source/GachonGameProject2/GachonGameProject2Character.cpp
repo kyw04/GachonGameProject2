@@ -121,7 +121,7 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 {
 	if (Stamina < 0.1f)
 		return;
-
+	IsAttack = false;
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	MovementVector = MovementVector.GetSafeNormal();
@@ -188,10 +188,14 @@ void AGachonGameProject2Character::Attack(const FInputActionValue& Value)
 	// -1 = left, 0 = mid, 1 = right
 	FVector2D AttackHand = Value.Get<FVector2D>();
 
-	if (Anim)
-	{
-		PlayAnimMontage(Anim, 1, NAME_None);
-	}
+	//if (Anim)
+	//{
+	//	PlayAnimMontage(Anim, 1, NAME_None);
+	//}
+
+	//if (AnimSequence)
+	//	GetMesh()->PlayAnimation(AnimSequence, false);
+	IsAttack = true;
 
 	UE_LOG(LogTemp, Log, TEXT("%f"), AttackHand.X + AttackHand.Y);
 	

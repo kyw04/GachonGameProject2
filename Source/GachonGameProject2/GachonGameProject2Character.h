@@ -63,6 +63,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* Anim;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	UAnimSequence* AnimSequence;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	bool IsAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float RestTime = 0.0f;
