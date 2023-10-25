@@ -7,22 +7,11 @@
 #include "InputActionValue.h"
 #include "GachonGameProject2Character.generated.h"
 
-UENUM(BlueprintType)
-enum class EState : uint8
-{
-	Idle UMETA(DisplayName = "Idle"),
-	Walk UMETA(DisplayName = "Walk"),
-	Run UMETA(DisplayName = "Run"),
-	Jump UMETA(DisplayName = "Jump"),
-	Attack UMETA(DisplayName = "Attack"),
-	Groggy UMETA(DisplayName = "Groggy")
-};
 
 UCLASS(config=Game)
 class AGachonGameProject2Character : public ACharacter
 {
 	GENERATED_BODY()
-	
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -55,7 +44,6 @@ class AGachonGameProject2Character : public ACharacter
 
 	
 public:
-
 	AGachonGameProject2Character();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Info")
@@ -87,8 +75,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float SprintStamina;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EState State;
 
 protected:
 
@@ -103,8 +89,6 @@ protected:
 	void Jump();
 
 	void Attack(const FInputActionValue& Value);
-
-	void StaminaIsZero();
 
 protected:
 	// APawn interface
