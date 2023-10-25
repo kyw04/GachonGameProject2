@@ -187,7 +187,12 @@ void AGachonGameProject2Character::Attack(const FInputActionValue& Value)
 {
 	// -1 = left, 0 = mid, 1 = right
 	FVector2D AttackHand = Value.Get<FVector2D>();
-	PlayAnimMontage(Anim, 1, NAME_None);
+
+	if (Anim)
+	{
+		PlayAnimMontage(Anim, 1, NAME_None);
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("%f"), AttackHand.X + AttackHand.Y);
 	
 }
