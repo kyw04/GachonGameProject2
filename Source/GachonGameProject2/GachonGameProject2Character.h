@@ -15,7 +15,8 @@ enum class EState : uint8
 	Run UMETA(DisplayName = "Run"),
 	Jump UMETA(DisplayName = "Jump"),
 	Attack UMETA(DisplayName = "Attack"),
-	Groggy UMETA(DisplayName = "Groggy")
+	Groggy UMETA(DisplayName = "Groggy"),
+	WeaponChange UMETA(DisplayName = "WeaponChange")
 };
 
 UCLASS(config=Game)
@@ -55,7 +56,7 @@ class AGachonGameProject2Character : public ACharacter
 	
 public:
 	AGachonGameProject2Character();
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EState State;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Info")
@@ -74,11 +75,11 @@ public:
 	float RecoveryStamina = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-	UAnimMontage* Anim;
+	UAnimMontage* AttackAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-	UAnimSequence* AnimSequence;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	bool IsAttack;
+	UAnimMontage* HoldAnim;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	UAnimMontage* DrawAnim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float RestTime = 0.0f;
@@ -91,6 +92,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float SprintStamina;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bUseWeapon;
 
 protected:
 
@@ -106,6 +109,7 @@ protected:
 
 	void Attack(const FInputActionValue& Value);
 	void StaminaIsZero();
+	void WeaponChange();
 
 protected:
 	// APawn interface

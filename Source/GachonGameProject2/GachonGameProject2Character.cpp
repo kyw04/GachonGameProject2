@@ -83,6 +83,8 @@ void AGachonGameProject2Character::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 
+	bUseWeapon = false;
+
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -123,6 +125,14 @@ void AGachonGameProject2Character::Jump()
 {
 	if (Stamina < 5.0f)
 		return;
+
+	switch (State)
+	{
+	case EState::Attack:
+	case EState::Groggy:
+	case EState::WeaponChange:
+		return;
+	}
 		
 	RestTime = 0.0f;
 	if (ACharacter::JumpKeyHoldTime == 0 && ACharacter::CanJump())
@@ -155,6 +165,13 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 		{
 			RestTime = 0.0f;
 			State = EState::Run;
+
+			if (bUseWeapon)
+			{
+				WeaponChange();
+				return;
+			}
+
 			//UE_LOG(LogTemp, Log, TEXT("sprint"));
 			Stamina -= SprintStamina;
 			if (Stamina <= 0.0f)
@@ -210,18 +227,43 @@ void AGachonGameProject2Character::Look(const FInputActionValue& Value)
 	}
 }
 
+void AGachonGameProject2Character::WeaponChange()
+{
+	State = EState::WeaponChange;
+	bUseWeapon = !bUseWeapon;
+
+	if (bUseWeapon)
+		PlayAnimMontage(DrawAnim, 1, NAME_None);
+	else
+		PlayAnimMontage(HoldAnim, 1, NAME_None);
+}
+
 void AGachonGameProject2Character::Attack(const FInputActionValue& Value)
 {
+	switch (State)
+	{
+	case EState::Attack:
+	case EState::Groggy:
+	case EState::WeaponChange:
+		return;
+	}
+
+	if (!bUseWeapon)
+	{
+		WeaponChange();
+		return;
+	}
+
 	// -1 = left, 0 = mid, 1 = right
 	FVector2D AttackHand = Value.Get<FVector2D>();
 
-	//if (Anim)
-	//{
-	//	PlayAnimMontage(Anim, 1, NAME_None);
-	//}
+	if (AttackAnim)
+	{
+		PlayAnimMontage(AttackAnim, 1, NAME_None);
+	}
 
-	//if (AnimSequence)
-	//	GetMesh()->PlayAnimation(AnimSequence, false);
+	//if (AttackAnim)
+	//	GetMesh()->PlayAnimation(AttackAnim, false);
 	State = EState::Attack;
 
 	UE_LOG(LogTemp, Log, TEXT("%f"), AttackHand.X + AttackHand.Y);
