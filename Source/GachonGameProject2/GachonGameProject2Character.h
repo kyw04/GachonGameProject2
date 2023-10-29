@@ -15,6 +15,7 @@ enum class EState : uint8
 	Run UMETA(DisplayName = "Run"),
 	Jump UMETA(DisplayName = "Jump"),
 	Attack UMETA(DisplayName = "Attack"),
+	AttackReady UMETA(DisplayName = "AttackReady"),
 	Groggy UMETA(DisplayName = "Groggy"),
 	WeaponChange UMETA(DisplayName = "WeaponChange")
 };
@@ -75,7 +76,9 @@ public:
 	float RecoveryStamina = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-	UAnimMontage* AttackAnim;
+	TArray<UAnimMontage*> AttackAnims;
+	FVector2D AttackHand;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* HoldAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
@@ -107,7 +110,8 @@ protected:
 	
 	void Jump();
 
-	void Attack(const FInputActionValue& Value);
+	void Attack();
+	void ReadyAttack(const FInputActionValue& Value);
 	void StaminaIsZero();
 	void WeaponChange();
 

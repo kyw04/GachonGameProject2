@@ -116,7 +116,8 @@ void AGachonGameProject2Character::SetupPlayerInputComponent(class UInputCompone
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Look);
 
 		//Attack
-		EnhancedInputComponent->BindAction(AttackActon, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Attack);
+		EnhancedInputComponent->BindAction(AttackActon, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::ReadyAttack);
+		EnhancedInputComponent->BindAction(AttackActon, ETriggerEvent::Completed, this, &AGachonGameProject2Character::Attack);
 	}
 
 }
@@ -238,7 +239,7 @@ void AGachonGameProject2Character::WeaponChange()
 		PlayAnimMontage(HoldAnim, 1, NAME_None);
 }
 
-void AGachonGameProject2Character::Attack(const FInputActionValue& Value)
+void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 {
 	if (!ACharacter::CanJump())
 		return;
@@ -257,19 +258,25 @@ void AGachonGameProject2Character::Attack(const FInputActionValue& Value)
 		return;
 	}
 
-	// -1 = left, 0 = mid, 1 = right
-	FVector2D AttackHand = Value.Get<FVector2D>();
+	// x + y = { -1 = left, 0 = mid, 1 = right }
+	AttackHand = Value.Get<FVector2D>();
 
-	if (AttackAnim)
-	{
-		PlayAnimMontage(AttackAnim, 1, NAME_None);
-	}
+	State = EState::AttackReady;
+	UE_LOG(LogTemp, Log, TEXT("%f"), AttackHand.X + AttackHand.Y);
+}
 
-	//if (AttackAnim)
-	//	GetMesh()->PlayAnimation(AttackAnim, false);
+void AGachonGameProject2Character::Attack()
+{
+	if (!ACharacter::CanJump() || State != EState::AttackReady)
+		return;
 	State = EState::Attack;
 
-	UE_LOG(LogTemp, Log, TEXT("%f"), AttackHand.X + AttackHand.Y);
-	
+	int index = AttackHand.X + AttackHand.Y + 1;
+	if (AttackAnims[index])
+	{
+		PlayAnimMontage(AttackAnims[index], 1, NAME_None);
+	}
+
+	AttackHand = AttackHand.Zero();
 }
 
