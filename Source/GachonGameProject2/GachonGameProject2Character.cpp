@@ -68,6 +68,7 @@ void AGachonGameProject2Character::Tick(float DeltaTime)
 		RestTime += DeltaTime * 5.0f;
 	}
 
+	PublicDeltaTime = DeltaTime;
 	RecoveryStamina = StaminaPerSecond * DeltaTime;
 	SprintStamina = 1.0f * DeltaTime;
 }
@@ -219,6 +220,7 @@ void AGachonGameProject2Character::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
+	//UE_LOG(LogTemp, Log, TEXT("%f %f"), LookAxisVector.X, LookAxisVector.Y);
 
 	if (Controller != nullptr)
 	{
@@ -258,11 +260,22 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 		return;
 	}
 
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+	SetActorRotation(YawRotation);
+
 	// x + y = { -1 = left, 0 = mid, 1 = right }
 	AttackHand = Value.Get<FVector2D>();
+	AttackHoldTime += PublicDeltaTime;
+
+	if (AttackHoldTime >= 1.0f)
+	{
+		Attack();
+		return;
+	}
 
 	State = EState::AttackReady;
-	UE_LOG(LogTemp, Log, TEXT("%f"), AttackHand.X + AttackHand.Y);
+	UE_LOG(LogTemp, Log, TEXT("%f\nTime: %f"), AttackHand.X + AttackHand.Y, AttackHoldTime);
 }
 
 void AGachonGameProject2Character::Attack()
@@ -270,6 +283,7 @@ void AGachonGameProject2Character::Attack()
 	if (!ACharacter::CanJump() || State != EState::AttackReady)
 		return;
 	State = EState::Attack;
+	AttackHoldTime = 0;
 
 	int index = AttackHand.X + AttackHand.Y + 1;
 	if (AttackAnims[index])

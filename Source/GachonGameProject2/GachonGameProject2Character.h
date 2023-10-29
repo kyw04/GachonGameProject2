@@ -57,8 +57,10 @@ class AGachonGameProject2Character : public ACharacter
 	
 public:
 	AGachonGameProject2Character();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EState State;
+	float PublicDeltaTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Info")
 	float MaxHealth = 100.0f;
@@ -78,6 +80,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	TArray<UAnimMontage*> AttackAnims;
 	FVector2D AttackHand;
+	float AttackHoldTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* HoldAnim;
