@@ -229,6 +229,9 @@ void AGachonGameProject2Character::Look(const FInputActionValue& Value)
 
 void AGachonGameProject2Character::WeaponChange()
 {
+	if (!ACharacter::CanJump())
+		return;
+
 	State = EState::WeaponChange;
 	bUseWeapon = !bUseWeapon;
 
