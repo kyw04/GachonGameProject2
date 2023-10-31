@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Particles/ParticleSystem.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GachonGameProject2Character.generated.h"
 
 UENUM(BlueprintType)
@@ -100,6 +102,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bUseWeapon;
+	
+
+	UPROPERTY(EditAnywhere, Category = "Particle")
+	UParticleSystem* ParticleAsset;
+	UGameplayStatics* Gameplay;
 
 protected:
 

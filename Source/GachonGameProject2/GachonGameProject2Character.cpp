@@ -51,6 +51,7 @@ AGachonGameProject2Character::AGachonGameProject2Character()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
+
 void AGachonGameProject2Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -202,13 +203,11 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 
 	State = EState::Idle;
 }
-
 void AGachonGameProject2Character::OnSprint()
 {
 	bOnSprint = true;
 	//UE_LOG(LogTemp, Log, TEXT("OnSprint"));
 }
-
 void AGachonGameProject2Character::EndSprint()
 {
 	bOnSprint = false;
@@ -280,6 +279,7 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 	if (AttackHoldTime >= 1.0f)
 	{
 		// show particle
+		Gameplay->SpawnEmitterAttached(ParticleAsset, RootComponent, FName("Sword_End"));
 		Attack();
 		return;
 	}
