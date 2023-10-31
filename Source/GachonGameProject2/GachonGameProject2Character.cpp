@@ -260,22 +260,32 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 		return;
 	}
 
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-	SetActorRotation(YawRotation);
+	if (AttackHoldTime == 0) // rotate in the direction the camera is looking
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		SetActorRotation(YawRotation);
+	}
 
 	// x + y = { -1 = left, 0 = mid, 1 = right }
 	AttackHand = Value.Get<FVector2D>();
 	AttackHoldTime += PublicDeltaTime;
 
+	int index = AttackHand.X + AttackHand.Y + 1;
+	if (AttackAnims[index])
+	{
+		PlayAnimMontage(AttackAnims[index], 1, NAME_None);
+	}
+
 	if (AttackHoldTime >= 1.0f)
 	{
+		// show particle
 		Attack();
 		return;
 	}
 
 	State = EState::AttackReady;
-	UE_LOG(LogTemp, Log, TEXT("%f\nTime: %f"), AttackHand.X + AttackHand.Y, AttackHoldTime);
+	//UE_LOG(LogTemp, Log, TEXT("%f\nTime: %f"), AttackHand.X + AttackHand.Y, AttackHoldTime);
 }
 
 void AGachonGameProject2Character::Attack()
@@ -289,6 +299,19 @@ void AGachonGameProject2Character::Attack()
 	if (AttackAnims[index])
 	{
 		PlayAnimMontage(AttackAnims[index], 1, NAME_None);
+	}
+
+	switch (index)
+	{
+	case 0:
+		UE_LOG(LogTemp, Log, TEXT("left"));
+		break;
+	case 1:
+		UE_LOG(LogTemp, Log, TEXT("middle"));
+		break;
+	case 2:
+		UE_LOG(LogTemp, Log, TEXT("right"));
+		break;
 	}
 
 	AttackHand = AttackHand.Zero();
