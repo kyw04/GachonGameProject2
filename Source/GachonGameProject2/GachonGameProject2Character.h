@@ -19,10 +19,12 @@ enum class EState : uint8
 	Attack UMETA(DisplayName = "Attack"),
 	AttackReady UMETA(DisplayName = "AttackReady"),
 	Groggy UMETA(DisplayName = "Groggy"),
-	WeaponChange UMETA(DisplayName = "WeaponChange")
+	WeaponChange UMETA(DisplayName = "WeaponChange"),
+	Roll UMETA(DisplayName = "Roll")
+
 };
 
-UCLASS(config=Game)
+UCLASS(config = Game)
 class AGachonGameProject2Character : public ACharacter
 {
 	GENERATED_BODY()
@@ -34,7 +36,7 @@ class AGachonGameProject2Character : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
-	
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
@@ -54,9 +56,12 @@ class AGachonGameProject2Character : public ACharacter
 	class UInputAction* LookAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* AttackActon;
+	class UInputAction* AttackAction;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* RollAction;
+
+
 public:
 	AGachonGameProject2Character();
 
@@ -88,6 +93,8 @@ public:
 	UAnimMontage* HoldAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* DrawAnim;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	UAnimMontage* RollAnim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float RestTime = 0.0f;
@@ -102,7 +109,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bUseWeapon;
-	
+
 
 	UPROPERTY(EditAnywhere, Category = "Particle")
 	UParticleSystem* ParticleAsset;
@@ -117,9 +124,9 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-	
-	void Jump();
 
+	void Jump();
+	void Roll();
 	void Attack();
 	void ReadyAttack(const FInputActionValue& Value);
 	void StaminaIsZero();
@@ -128,7 +135,7 @@ protected:
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
 	// To add mapping context
 	virtual void BeginPlay();
 

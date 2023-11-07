@@ -19,7 +19,7 @@ AGachonGameProject2Character::AGachonGameProject2Character()
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-		
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -104,7 +104,7 @@ void AGachonGameProject2Character::SetupPlayerInputComponent(class UInputCompone
 {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
+
 		//Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -118,8 +118,10 @@ void AGachonGameProject2Character::SetupPlayerInputComponent(class UInputCompone
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Look);
 
 		//Attack
-		EnhancedInputComponent->BindAction(AttackActon, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::ReadyAttack);
-		EnhancedInputComponent->BindAction(AttackActon, ETriggerEvent::Completed, this, &AGachonGameProject2Character::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::ReadyAttack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &AGachonGameProject2Character::Attack);
+
+		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Roll);
 	}
 
 }
@@ -136,7 +138,7 @@ void AGachonGameProject2Character::Jump()
 	case EState::WeaponChange:
 		return;
 	}
-		
+
 	RestTime = 0.0f;
 	if (ACharacter::JumpKeyHoldTime == 0 && ACharacter::CanJump())
 	{
@@ -192,7 +194,7 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 
 		// get forward vector
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) * speed;
-	
+
 		// get right vector 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y) * speed;
 
@@ -227,6 +229,15 @@ void AGachonGameProject2Character::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AGachonGameProject2Character::Roll()
+{
+	if (State != EState::Idle || !ACharacter::CanJump())
+		return;
+
+	State = EState::Roll;
+	PlayAnimMontage(RollAnim, 1, NAME_None);
 }
 
 void AGachonGameProject2Character::WeaponChange()
