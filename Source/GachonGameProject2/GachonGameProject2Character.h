@@ -88,6 +88,7 @@ public:
 	TArray<UAnimMontage*> AttackAnims;
 	FVector2D AttackHand;
 	float AttackHoldTime;
+	bool bAttackHoldOn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* HoldAnim;

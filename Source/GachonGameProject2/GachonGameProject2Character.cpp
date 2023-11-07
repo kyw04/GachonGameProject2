@@ -136,6 +136,7 @@ void AGachonGameProject2Character::Jump()
 	case EState::Attack:
 	case EState::Groggy:
 	case EState::WeaponChange:
+	case EState::Roll:
 		return;
 	}
 
@@ -272,6 +273,7 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 
 	if (AttackHoldTime == 0) // rotate in the direction the camera is looking
 	{
+		bAttackHoldOn = false;
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		SetActorRotation(YawRotation);
@@ -287,10 +289,13 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 		PlayAnimMontage(AttackAnims[index], 1, NAME_None);
 	}
 
-	if (AttackHoldTime >= 1.0f)
+	if (AttackHoldTime >= 0.6f && !bAttackHoldOn)
 	{
-		// show particle
+		bAttackHoldOn = true;
 		Gameplay->SpawnEmitterAttached(ParticleAsset, RootComponent, FName("Sword_End"));
+	}
+	if (AttackHoldTime >= 1.25f)
+	{
 		Attack();
 		return;
 	}
