@@ -122,8 +122,9 @@ void AGachonGameProject2Character::SetupPlayerInputComponent(class UInputCompone
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &AGachonGameProject2Character::Attack);
 
 		EnhancedInputComponent->BindAction(RollAction, ETriggerEvent::Triggered, this, &AGachonGameProject2Character::Roll);
+		EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Started, this, &AGachonGameProject2Character::OnBlock);
+		EnhancedInputComponent->BindAction(BlockAction, ETriggerEvent::Completed, this, &AGachonGameProject2Character::EndBlock);
 	}
-
 }
 
 void AGachonGameProject2Character::Jump()
@@ -271,6 +272,12 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 		return;
 	}
 
+	if (bOnBlock)
+	{
+		Block();
+		return;
+	}
+
 	if (AttackHoldTime == 0) // rotate in the direction the camera is looking
 	{
 		bAttackHoldOn = false;
@@ -317,19 +324,23 @@ void AGachonGameProject2Character::Attack()
 		PlayAnimMontage(AttackAnims[index], 1, NAME_None);
 	}
 
-	switch (index)
-	{
-	case 0:
-		UE_LOG(LogTemp, Log, TEXT("left"));
-		break;
-	case 1:
-		UE_LOG(LogTemp, Log, TEXT("middle"));
-		break;
-	case 2:
-		UE_LOG(LogTemp, Log, TEXT("right"));
-		break;
-	}
-
 	AttackHand = AttackHand.Zero();
 }
 
+void AGachonGameProject2Character::OnBlock()
+{
+	bOnBlock = true;
+}
+void AGachonGameProject2Character::EndBlock()
+{
+	bOnBlock = false;
+}
+
+void AGachonGameProject2Character::Block()
+{
+	int index = AttackHand.X + AttackHand.Y + 1;
+	if (BlockAnims[index])
+	{
+		PlayAnimMontage(BlockAnims[index], 1, NAME_None);
+	}
+}

@@ -61,6 +61,10 @@ class AGachonGameProject2Character : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* RollAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* BlockAction;
+
+
 
 public:
 	AGachonGameProject2Character();
@@ -91,6 +95,9 @@ public:
 	bool bAttackHoldOn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	TArray<UAnimMontage*> BlockAnims;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* HoldAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* DrawAnim;
@@ -104,6 +111,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bOnSprint;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bOnBlock;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float SprintStamina;
@@ -132,6 +141,10 @@ protected:
 	void ReadyAttack(const FInputActionValue& Value);
 	void StaminaIsZero();
 	void WeaponChange();
+
+	void OnBlock();
+	void EndBlock();
+	void Block();
 
 protected:
 	// APawn interface
