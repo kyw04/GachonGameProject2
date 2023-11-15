@@ -20,7 +20,8 @@ enum class EState : uint8
 	AttackReady UMETA(DisplayName = "AttackReady"),
 	Groggy UMETA(DisplayName = "Groggy"),
 	WeaponChange UMETA(DisplayName = "WeaponChange"),
-	Roll UMETA(DisplayName = "Roll")
+	Roll UMETA(DisplayName = "Roll"),
+	Block UMETA(DisplayName = "Block")
 
 };
 
@@ -96,6 +97,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	TArray<UAnimMontage*> BlockAnims;
+	float BlockStart;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* HoldAnim;
@@ -116,10 +118,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float SprintStamina;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SmoothLegsValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bUseWeapon;
 
+	int UseHandIndex;
 
 	UPROPERTY(EditAnywhere, Category = "Particle")
 	UParticleSystem* ParticleAsset;
@@ -144,7 +149,8 @@ protected:
 
 	void OnBlock();
 	void EndBlock();
-	void Block();
+	void PlayBlock();
+	void StopBlock();
 
 protected:
 	// APawn interface

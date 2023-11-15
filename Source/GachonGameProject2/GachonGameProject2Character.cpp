@@ -69,6 +69,9 @@ void AGachonGameProject2Character::Tick(float DeltaTime)
 		RestTime += DeltaTime * 5.0f;
 	}
 
+	if (BlockStart != 0)
+		BlockStart += DeltaTime;
+
 	PublicDeltaTime = DeltaTime;
 	RecoveryStamina = StaminaPerSecond * DeltaTime;
 	SprintStamina = 1.0f * DeltaTime;
@@ -86,6 +89,7 @@ void AGachonGameProject2Character::BeginPlay()
 	Super::BeginPlay();
 
 	bUseWeapon = false;
+	BlockStart = 0;
 
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
@@ -134,10 +138,8 @@ void AGachonGameProject2Character::Jump()
 
 	switch (State)
 	{
-	case EState::Attack:
-	case EState::Groggy:
-	case EState::WeaponChange:
-	case EState::Roll:
+	case EState::Attack: case EState::Groggy: case EState::WeaponChange: 
+	case EState::Roll: case EState::Block:
 		return;
 	}
 
@@ -272,9 +274,14 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 		return;
 	}
 
+	// x + y = { -1 = left, 0 = mid, 1 = right }
+	AttackHand = Value.Get<FVector2D>();
+	AttackHoldTime += PublicDeltaTime;
+	UseHandIndex = AttackHand.X + AttackHand.Y + 1;
+
 	if (bOnBlock)
 	{
-		Block();
+		PlayBlock();
 		return;
 	}
 
@@ -286,14 +293,9 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 		SetActorRotation(YawRotation);
 	}
 
-	// x + y = { -1 = left, 0 = mid, 1 = right }
-	AttackHand = Value.Get<FVector2D>();
-	AttackHoldTime += PublicDeltaTime;
-
-	int index = AttackHand.X + AttackHand.Y + 1;
-	if (AttackAnims[index])
+	if (AttackAnims[UseHandIndex])
 	{
-		PlayAnimMontage(AttackAnims[index], 1, NAME_None);
+		PlayAnimMontage(AttackAnims[UseHandIndex], 1, NAME_None);
 	}
 
 	if (AttackHoldTime >= 0.6f && !bAttackHoldOn)
@@ -313,15 +315,19 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 
 void AGachonGameProject2Character::Attack()
 {
+	if (BlockStart != 0)
+	{
+		StopBlock();
+	}
+
 	if (!ACharacter::CanJump() || State != EState::AttackReady)
 		return;
 	State = EState::Attack;
 	AttackHoldTime = 0;
 
-	int index = AttackHand.X + AttackHand.Y + 1;
-	if (AttackAnims[index])
+	if (AttackAnims[UseHandIndex])
 	{
-		PlayAnimMontage(AttackAnims[index], 1, NAME_None);
+		PlayAnimMontage(AttackAnims[UseHandIndex], 1, NAME_None);
 	}
 
 	AttackHand = AttackHand.Zero();
@@ -333,14 +339,30 @@ void AGachonGameProject2Character::OnBlock()
 }
 void AGachonGameProject2Character::EndBlock()
 {
+	StopBlock();
 	bOnBlock = false;
 }
 
-void AGachonGameProject2Character::Block()
+void AGachonGameProject2Character::PlayBlock()
 {
-	int index = AttackHand.X + AttackHand.Y + 1;
-	if (BlockAnims[index])
+	State = EState::Block;
+	AttackHoldTime = 0;
+
+	if (BlockStart == 0 && BlockAnims[UseHandIndex])
 	{
-		PlayAnimMontage(BlockAnims[index], 1, NAME_None);
+		UE_LOG(LogTemp, Log, TEXT("%d"), UseHandIndex);
+		BlockStart = 1.0f;
+		SmoothLegsValue = 0.0f;
+		AttackHand = AttackHand.Zero();
+		PlayAnimMontage(BlockAnims[UseHandIndex], 1, NAME_None);
 	}
+}
+
+void AGachonGameProject2Character::StopBlock()
+{
+	StopAnimMontage(BlockAnims[UseHandIndex]);
+
+	SmoothLegsValue = 1.0f;
+	State = EState::Idle;
+	BlockStart = 0;
 }
