@@ -324,6 +324,7 @@ void AGachonGameProject2Character::Attack()
 
 	if (!ACharacter::CanJump() || State != EState::AttackReady)
 		return;
+
 	State = EState::Attack;
 	AttackHoldTime = 0;
 
@@ -362,7 +363,13 @@ void AGachonGameProject2Character::PlayBlock()
 
 void AGachonGameProject2Character::StopBlock()
 {
-	StopAnimMontage(BlockAnims[UseHandIndex]);
+	if (State != EState::Block)
+		return;
+
+	for (int i = 0; i < 3; i++)
+	{
+		StopAnimMontage(BlockAnims[i]);
+	}
 
 	SmoothLegsValue = 1.0f;
 	State = EState::Idle;
