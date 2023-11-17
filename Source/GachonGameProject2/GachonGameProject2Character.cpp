@@ -278,7 +278,6 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 
 	// x + y = { -1 = left, 0 = mid, 1 = right }
 	AttackHand = Value.Get<FVector2D>();
-	AttackHoldTime += PublicDeltaTime;
 	UseHandIndex = AttackHand.X + AttackHand.Y + 1;
 
 	if (bOnBlock)
@@ -294,6 +293,7 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 		SetActorRotation(YawRotation);
 	}
+	AttackHoldTime += PublicDeltaTime;
 
 	if (AttackAnims[UseHandIndex])
 	{
