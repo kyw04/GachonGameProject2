@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GachonGameProject2Character.h"
+
 #include "AWeaponCollision.generated.h"
 
 UCLASS()
@@ -36,7 +38,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere)
-	
+	//UPROPERTY(BlueprintCallable)
+	EState GetPlayerState() const;
+
+	APlayerController* PlayerController;
+	AGachonGameProject2Character* Player;
+
+	UPROPERTY(EditAnywhere, Category = Mesh)
 	UStaticMeshComponent* WeaponMesh;
 };

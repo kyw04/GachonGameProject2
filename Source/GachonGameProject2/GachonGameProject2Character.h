@@ -69,6 +69,7 @@ class AGachonGameProject2Character : public ACharacter
 
 public:
 	AGachonGameProject2Character();
+	void Block();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EState State;

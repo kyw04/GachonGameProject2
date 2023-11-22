@@ -7,7 +7,7 @@
 ATestActor::ATestActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 }
 
@@ -15,7 +15,7 @@ ATestActor::ATestActor()
 void ATestActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	CurrentTime = 0.0f;
 }
 
 // Called every frame
@@ -23,5 +23,15 @@ void ATestActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CurrentTime >= MovementTime)
+	{
+		Direction *= -1;
+		CurrentTime = 0.0f;
+	}
+	CurrentTime += DeltaTime;
+	UE_LOG(LogTemp, Log, TEXT("Test Actor Current Time: %f"), CurrentTime);
+
+
+	SetActorLocation(GetActorLocation() + (Direction * DeltaTime * Speed));
 }
 

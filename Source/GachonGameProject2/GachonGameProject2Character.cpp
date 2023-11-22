@@ -376,3 +376,14 @@ void AGachonGameProject2Character::StopBlock()
 	BlockStart = 0;
 }
 
+void AGachonGameProject2Character::Block()
+{
+	if (BlockStart <= 1.5f)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Silver, FString::Printf(TEXT("Parrying")));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::Printf(TEXT("Block")));
+	}
+}

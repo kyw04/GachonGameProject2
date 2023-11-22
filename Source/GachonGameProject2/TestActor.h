@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
 #include "TestActor.generated.h"
 
 UCLASS()
@@ -18,6 +19,15 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere)
+	float Speed;
+	UPROPERTY(EditAnywhere)
+	float MovementTime;
+	float CurrentTime;
+
+	UPROPERTY(EditAnywhere)
+	FVector Direction;
 
 public:	
 	// Called every frame
