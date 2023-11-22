@@ -16,8 +16,8 @@ AAWeaponCollision::AAWeaponCollision()
 void AAWeaponCollision::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
 	if (PlayerController)
 		Player = Cast<AGachonGameProject2Character>(PlayerController->GetPawn());
 

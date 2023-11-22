@@ -15,6 +15,9 @@ ATestActor::ATestActor()
 void ATestActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Log, TEXT("Test Actor Begin"));
+
 	CurrentTime = 0.0f;
 }
 
