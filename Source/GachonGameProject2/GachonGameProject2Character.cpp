@@ -303,7 +303,7 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 	if (AttackHoldTime >= 0.6f && !bAttackHoldOn)
 	{
 		bAttackHoldOn = true;
-		Gameplay->SpawnEmitterAttached(ParticleAsset, RootComponent, FName("Sword_End"));
+		Gameplay->SpawnEmitterAttached(AttackHoldParticleAsset, RootComponent, FName("Sword_End"));
 	}
 	if (AttackHoldTime >= 1.25f)
 	{
@@ -380,10 +380,14 @@ void AGachonGameProject2Character::Block()
 {
 	if (BlockStart <= 1.25f)
 	{
+		Gameplay->SpawnEmitterAttached(ParryingParticleAsset, RootComponent, NAME_None);
+
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Silver, FString::Printf(TEXT("Parrying")));
 	}
 	else
 	{
+		Gameplay->SpawnEmitterAttached(BlockParticleAsset, RootComponent, NAME_None);
+
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::Printf(TEXT("Block")));
 	}
 }

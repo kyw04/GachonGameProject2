@@ -128,7 +128,11 @@ public:
 	int UseHandIndex;
 
 	UPROPERTY(EditAnywhere, Category = "Particle")
-	UParticleSystem* ParticleAsset;
+	UParticleSystem* AttackHoldParticleAsset;
+	UPROPERTY(EditAnywhere, Category = "Particle")
+	UParticleSystem* ParryingParticleAsset;
+	UPROPERTY(EditAnywhere, Category = "Particle")
+	UParticleSystem* BlockParticleAsset;
 	UGameplayStatics* Gameplay;
 
 protected:
