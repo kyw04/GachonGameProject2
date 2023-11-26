@@ -21,7 +21,8 @@ enum class EState : uint8
 	Groggy UMETA(DisplayName = "Groggy"),
 	WeaponChange UMETA(DisplayName = "WeaponChange"),
 	Roll UMETA(DisplayName = "Roll"),
-	Block UMETA(DisplayName = "Block")
+	Block UMETA(DisplayName = "Block"),
+	Blocking UMETA(DisplayName = "Blocking")
 
 };
 
@@ -69,7 +70,7 @@ class AGachonGameProject2Character : public ACharacter
 
 public:
 	AGachonGameProject2Character();
-	void Block();
+	void Blocking(AActor* OtherActor);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EState State;
@@ -116,9 +117,21 @@ public:
 	bool bOnSprint;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bOnBlock;
+	bool bBlockSuccess;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stamina")
 	float SprintStamina;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stamina")
+	float AttackStamina = 10.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stamina")
+	float HoldAttackStamina = 20.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stamina")
+	float BlockFailureStamina = 5.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stamina")
+	float BlockSuccessStamina = 15.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stamina")
+	float ParryingStamina = 5.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SmoothLegsValue;
 
@@ -149,6 +162,7 @@ protected:
 	void Roll();
 	void Attack();
 	void ReadyAttack(const FInputActionValue& Value);
+	bool ReduceStamina(float Value);
 	void StaminaIsZero();
 	void WeaponChange();
 

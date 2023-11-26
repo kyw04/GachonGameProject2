@@ -35,35 +35,41 @@ void AAWeaponCollision::Tick(float DeltaTime)
 //void AAWeaponCollision::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 //{
 //	//UE_LOG(LogTemp, Log, TEXT("NotifyHit"));
-//	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Notify Actor Hit... Other Actor Name: %s"), *Other->GetName()));
+//	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString::Printf(TEXT("Notify Actor Hit... Other Actor Name: %s"), *Other->GetName()));
 //}
 
 void AAWeaponCollision::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	//UE_LOG(LogTemp, Log, TEXT("NotifyActorBeginOverlap"));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Notify Actor Begin Overlap... Other Actor Name: %s"), *OtherActor->GetName()));
-	switch (GetPlayerState())
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Notify Actor Begin Overlap... Other Actor Name: %s"), *OtherActor->GetName()));
+	switch (Player->State)
 	{
 	case EState::Attack:
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Attack")));
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Attack")));
 		break;
 	case EState::Block:
-		Player->Block();
+		if (Player->State == EState::Blocking)
+			break;
+		Player->State = EState::Blocking;
+		Player->Blocking(OtherActor);
 		break;
 	default:
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("State Conditions Not Met")));
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("State Conditions Not Met")));
 	}
 }
 
 void AAWeaponCollision::NotifyActorEndOverlap(AActor* OtherActor)
 {
+	if (Player->State == EState::Blocking)
+		Player->State = EState::Idle;
+
 	//UE_LOG(LogTemp, Log, TEXT("NotifyActorEndOverlap"));
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Notify Actor End Overlap... Other Actor Name: %s"), *OtherActor->GetName()));
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Notify Actor End Overlap... Other Actor Name: %s"), *OtherActor->GetName()));
 }
 
-EState AAWeaponCollision::GetPlayerState() const
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Get Player State... Current Player State: %s"), *UEnum::GetValueAsString(Player->State)));
-	//UE_LOG(LogTemp, Log, TEXT("Player State Enum: %s"), *UEnum::GetValueAsString(Player->State));
-	return Player->State;
-}
+//EState AAWeaponCollision::GetPlayerState() const
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString::Printf(TEXT("Get Player State... Current Player State: %s"), *UEnum::GetValueAsString(Player->State)));
+//	//UE_LOG(LogTemp, Log, TEXT("Player State Enum: %s"), *UEnum::GetValueAsString(Player->State));
+//	return Player->State;
+//}

@@ -60,7 +60,7 @@ void AGachonGameProject2Character::Tick(float DeltaTime)
 
 	if (State == EState::Groggy)
 	{
-		RestTime += DeltaTime * 2.5f;
+		RestTime += DeltaTime * 0.7f;
 		if (RestTime >= StartRecoveryStaminaTime)
 		{
 			State = EState::Idle;
@@ -68,7 +68,29 @@ void AGachonGameProject2Character::Tick(float DeltaTime)
 	}
 	else
 	{
-		RestTime += DeltaTime * 5.0f;
+		RestTime += DeltaTime;
+	}
+
+	switch (State)
+	{
+	case EState::Groggy:
+	case EState::Idle:
+		if (Stamina <= 0.0f)
+			State = EState::Groggy;
+		break;
+	case EState::Walk:
+	case EState::Run:
+	case EState::Jump:
+	case EState::Attack:
+	case EState::AttackReady:
+	case EState::WeaponChange:
+	case EState::Roll:
+	case EState::Block:
+	case EState::Blocking:
+		RestTime = 0.0f;
+		break;
+	default:
+		break;
 	}
 
 	if (BlockStart != 0)
@@ -79,8 +101,23 @@ void AGachonGameProject2Character::Tick(float DeltaTime)
 	SprintStamina = 1.0f * DeltaTime;
 }
 
+bool AGachonGameProject2Character::ReduceStamina(float Value)
+{
+	RestTime = 0.0f;
+	Stamina -= Value;
+	if (Stamina <= 0.0f)
+	{
+		StaminaIsZero();
+		return true;
+	}
+
+	return false;
+}
+
 void AGachonGameProject2Character::StaminaIsZero()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString::Printf(TEXT("Groggy")));
+
 	Stamina = 0.0f;
 	State = EState::Groggy;
 }
@@ -135,9 +172,6 @@ void AGachonGameProject2Character::SetupPlayerInputComponent(class UInputCompone
 
 void AGachonGameProject2Character::Jump()
 {
-	if (Stamina < 5.0f)
-		return;
-
 	switch (State)
 	{
 	case EState::Attack: case EState::Groggy: case EState::WeaponChange: 
@@ -145,15 +179,10 @@ void AGachonGameProject2Character::Jump()
 		return;
 	}
 
-	RestTime = 0.0f;
 	if (ACharacter::JumpKeyHoldTime == 0 && ACharacter::CanJump())
 	{
-		Stamina -= 5.0f;
-		if (Stamina < 0.0f)
-		{
-			StaminaIsZero();
+		if (ReduceStamina(5.0f))
 			return;
-		}
 	}
 
 	ACharacter::Jump();
@@ -174,7 +203,6 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 		//UE_LOG(LogTemp, Log, TEXT("%s"), bOnSprint ? TEXT("true") : TEXT("flse"));
 		if (bOnSprint)
 		{
-			RestTime = 0.0f;
 			State = EState::Run;
 
 			if (bUseWeapon)
@@ -184,12 +212,8 @@ void AGachonGameProject2Character::Move(const FInputActionValue& Value)
 			}
 
 			//UE_LOG(LogTemp, Log, TEXT("sprint"));
-			Stamina -= SprintStamina;
-			if (Stamina <= 0.0f)
-			{
-				StaminaIsZero();
+			if (ReduceStamina(SprintStamina))
 				return;
-			}
 
 			speed = 1.0f;
 		}
@@ -242,6 +266,7 @@ void AGachonGameProject2Character::Roll()
 	if (State != EState::Idle || !ACharacter::CanJump())
 		return;
 
+	ReduceStamina(25.0f);
 	State = EState::Roll;
 	PlayAnimMontage(RollAnim, 1, NAME_None);
 }
@@ -303,6 +328,7 @@ void AGachonGameProject2Character::ReadyAttack(const FInputActionValue& Value)
 	if (AttackHoldTime >= 0.6f && !bAttackHoldOn)
 	{
 		bAttackHoldOn = true;
+		ReduceStamina(HoldAttackStamina);
 		Gameplay->SpawnEmitterAttached(AttackHoldParticleAsset, RootComponent, FName("Sword_End"));
 	}
 	if (AttackHoldTime >= 1.25f)
@@ -328,6 +354,9 @@ void AGachonGameProject2Character::Attack()
 	State = EState::Attack;
 	AttackHoldTime = 0;
 
+	if (!bAttackHoldOn)
+		ReduceStamina(AttackStamina);
+
 	if (AttackAnims[UseHandIndex])
 	{
 		PlayAnimMontage(AttackAnims[UseHandIndex], 1, NAME_None);
@@ -343,6 +372,7 @@ void AGachonGameProject2Character::OnBlock()
 void AGachonGameProject2Character::EndBlock()
 {
 	StopBlock();
+	bBlockSuccess = false;
 	bOnBlock = false;
 }
 
@@ -371,23 +401,33 @@ void AGachonGameProject2Character::StopBlock()
 		StopAnimMontage(BlockAnims[i]);
 	}
 
+	if (bBlockSuccess)
+	{
+		ReduceStamina(BlockFailureStamina);
+	}
+	else
+	{
+		ReduceStamina(BlockSuccessStamina);
+	}
+
 	SmoothLegsValue = 1.0f;
 	State = EState::Idle;
 	BlockStart = 0;
 }
 
-void AGachonGameProject2Character::Block()
+void AGachonGameProject2Character::Blocking(AActor* OtherActor)
 {
+	bBlockSuccess = true;
 	if (BlockStart <= 1.25f)
 	{
-		Gameplay->SpawnEmitterAttached(ParryingParticleAsset, RootComponent, NAME_None);
+		Gameplay->SpawnEmitterAttached(ParryingParticleAsset, GetMesh(), FName(TEXT("Blade_Center")));
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Silver, FString::Printf(TEXT("Parrying")));
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Silver, FString::Printf(TEXT("Parrying")));
 	}
 	else
 	{
-		Gameplay->SpawnEmitterAttached(BlockParticleAsset, RootComponent, NAME_None);
+		Gameplay->SpawnEmitterAttached(BlockParticleAsset, GetMesh(), FName(TEXT("Blade_Center")));
 
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::White, FString::Printf(TEXT("Block")));
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, FString::Printf(TEXT("Block")));
 	}
 }

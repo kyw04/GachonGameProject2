@@ -39,7 +39,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	//UPROPERTY(BlueprintCallable)
-	EState GetPlayerState() const;
+	//EState GetPlayerState() const;
 
 	APlayerController* PlayerController;
 	AGachonGameProject2Character* Player;
