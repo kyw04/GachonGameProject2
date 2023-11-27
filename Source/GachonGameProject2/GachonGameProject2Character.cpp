@@ -63,7 +63,14 @@ void AGachonGameProject2Character::Tick(float DeltaTime)
 		RestTime += DeltaTime * 0.7f;
 		if (RestTime >= StartRecoveryStaminaTime)
 		{
+			StopAnimMontage(GroggyAnim);
+			SmoothLegsValue = 1.0f;
 			State = EState::Idle;
+		}
+		else
+		{
+			SmoothLegsValue = 0.0f;
+			PlayAnimMontage(GroggyAnim, 1.0f, NAME_None);
 		}
 	}
 	else

@@ -107,6 +107,9 @@ public:
 	UAnimMontage* DrawAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* RollAnim;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	UAnimMontage* GroggyAnim;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float RestTime = 0.0f;
