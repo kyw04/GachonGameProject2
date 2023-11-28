@@ -32,7 +32,7 @@ void ATestActor::Tick(float DeltaTime)
 		CurrentTime = 0.0f;
 	}
 	CurrentTime += DeltaTime;
-	UE_LOG(LogTemp, Log, TEXT("Test Actor Current Time: %f"), CurrentTime);
+	//UE_LOG(LogTemp, Log, TEXT("Test Actor Current Time: %f"), CurrentTime);
 
 
 	SetActorLocation(GetActorLocation() + (Direction * DeltaTime * Speed));
