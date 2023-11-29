@@ -16,6 +16,7 @@
 
 AGachonGameProject2Character::AGachonGameProject2Character()
 {
+
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -366,7 +367,7 @@ void AGachonGameProject2Character::Attack()
 
 	if (AttackAnims[UseHandIndex])
 	{
-		PlayAnimMontage(AttackAnims[UseHandIndex], 1, NAME_None);
+		PlayAnimMontage(AttackAnims[UseHandIndex], Proficiency(UseHandIndex), NAME_None);
 	}
 
 	AttackHand = AttackHand.Zero();
@@ -391,6 +392,7 @@ void AGachonGameProject2Character::PlayBlock()
 	if (BlockStart == 0 && BlockAnims[UseHandIndex])
 	{
 		UE_LOG(LogTemp, Log, TEXT("%d"), UseHandIndex);
+		Proficiency(UseHandIndex);
 		BlockStart = 1.0f;
 		SmoothLegsValue = 0.0f;
 		AttackHand = AttackHand.Zero();
@@ -437,4 +439,43 @@ void AGachonGameProject2Character::Blocking(AActor* OtherActor)
 
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, FString::Printf(TEXT("Block")));
 	}
+}
+
+float AGachonGameProject2Character::Proficiency(int index)
+{
+	if (index == 0)
+	{
+		LeftHandUseCount++;
+		RightHandUseCount--;
+	}
+	if (index == 2)
+	{
+		LeftHandUseCount--;
+		RightHandUseCount++;
+	}
+
+	if (LeftHandUseCount < 0)
+		LeftHandUseCount = 0;
+	if (LeftHandUseCount > MaxUseCount)
+		LeftHandUseCount = MaxUseCount;
+	
+	if (RightHandUseCount < 0)
+		RightHandUseCount = 0;
+	if (RightHandUseCount > MaxUseCount)
+		RightHandUseCount = MaxUseCount;
+
+
+	LeftProficiency = LeftHandUseCount / MaxUseCount;
+	RightProficiency = RightHandUseCount / MaxUseCount;
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Proficiency... Index : %d"), index));
+
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Proficiency... Left Hand Proficiency : %f"), LeftProficiency));
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Proficiency... Right Hand Proficiency : %f"), RightProficiency));
+	
+	if (index == 0)
+		return LeftProficiency;
+	if (index == 1)
+		return 1;
+	return RightProficiency;
 }

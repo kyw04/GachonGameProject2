@@ -143,6 +143,17 @@ public:
 
 	int UseHandIndex;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Proficiency")
+	float LeftProficiency;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Proficiency")
+	float RightProficiency;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Proficiency")
+	int LeftHandUseCount = 500.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Proficiency")
+	int RightHandUseCount = 500.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Proficiency")
+	float MaxUseCount = 1000.0f;
+
 	UPROPERTY(EditAnywhere, Category = "Particle")
 	UParticleSystem* AttackHoldParticleAsset;
 	UPROPERTY(EditAnywhere, Category = "Particle")
@@ -173,6 +184,7 @@ protected:
 	void EndBlock();
 	void PlayBlock();
 	void StopBlock();
+	float Proficiency(int index);
 
 protected:
 	// APawn interface
