@@ -84,6 +84,8 @@ public:
 	float MaxStamina = 100.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float Stamina = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
+	float Damage = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Info")
 	float StaminaPerSecond = 10.0f;

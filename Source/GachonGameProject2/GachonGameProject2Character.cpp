@@ -367,7 +367,8 @@ void AGachonGameProject2Character::Attack()
 
 	if (AttackAnims[UseHandIndex])
 	{
-		PlayAnimMontage(AttackAnims[UseHandIndex], Proficiency(UseHandIndex), NAME_None);
+		Damage *= Proficiency(UseHandIndex);
+		PlayAnimMontage(AttackAnims[UseHandIndex], 1, NAME_None);
 	}
 
 	AttackHand = AttackHand.Zero();
