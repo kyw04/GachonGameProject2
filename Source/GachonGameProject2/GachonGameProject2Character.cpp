@@ -454,13 +454,13 @@ float AGachonGameProject2Character::Proficiency(int index)
 		RightHandUseCount++;
 	}
 
-	if (LeftHandUseCount < 0)
-		LeftHandUseCount = 0;
+	if (LeftHandUseCount < 1)
+		LeftHandUseCount = 1;
 	if (LeftHandUseCount > MaxUseCount)
 		LeftHandUseCount = MaxUseCount;
 	
-	if (RightHandUseCount < 0)
-		RightHandUseCount = 0;
+	if (RightHandUseCount < 1)
+		RightHandUseCount = 1;
 	if (RightHandUseCount > MaxUseCount)
 		RightHandUseCount = MaxUseCount;
 
