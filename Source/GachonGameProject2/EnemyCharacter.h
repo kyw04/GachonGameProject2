@@ -21,11 +21,16 @@ public:
 	bool IsBlocking;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool TakingAction;
+	float Time;
+	float ShowTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TArray<UAnimMontage*> AttackAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	TArray<UAnimMontage*> BlockAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	AActor* Player;
 
 protected:
 	// Called when the game starts or when spawned

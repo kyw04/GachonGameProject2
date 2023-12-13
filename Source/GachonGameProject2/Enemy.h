@@ -15,18 +15,6 @@ public:
 	// Sets default values for this actor's properties
 	AEnemy();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsAttacking;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsBlocking;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool TakingAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	TArray<UAnimMontage*> AttackAnim;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	TArray<UAnimMontage*> BlockAnim;
-
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,6 +23,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void Attack();
-	void Block();
+	
 };
