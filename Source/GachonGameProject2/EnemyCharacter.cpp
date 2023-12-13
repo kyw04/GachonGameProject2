@@ -24,16 +24,24 @@ void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	Time += DeltaTime;
-	//if (!TakingAction && GetDistanceTo(Player) <= 200.0f)
-	//{
-	//	TakingAction = true;
-	//	Attack();
-	//}
 
-	if (ShowTime <= Time)
+	if (Player != nullptr)
 	{
-		Time -= ShowTime + 0.1f;
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Green, FString::Printf(TEXT("GetDistanceTo... Player Distance To Enmey: %f"), GetDistanceTo(Player)));
+		if (!TakingAction && GetDistanceTo(Player) <= 150.0f)
+		{
+			TakingAction = true;
+			Attack();
+		}
+
+		if (ShowTime <= Time)
+		{
+			Time -= ShowTime + 0.1f;
+			GEngine->AddOnScreenDebugMessage(-1, 0.3f, FColor::Green, FString::Printf(TEXT("GetDistanceTo... Player Distance To Enmey: %f"), GetDistanceTo(Player)));
+		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Red, FString::Printf(TEXT("Player is nullptr!!")));
 	}
 }
 
@@ -48,13 +56,14 @@ void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 void AEnemyCharacter::Attack()
 {
 	IsAttacking = true;
-	int32 index = FMath::RandRange(0, AttackAnim.Num());
-	PlayAnimMontage(AttackAnim[index]);
+	int32 index = FMath::RandRange(0, AttackAnim.Num() - 1);
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, FString::Printf(TEXT("Attack... Attack Index is: %d"), index));
+	PlayAnimMontage(AttackAnim[index], 1, NAME_None);
 }
 
 void AEnemyCharacter::Block()
 {
 	IsBlocking = true;
-	int32 index = FMath::RandRange(0, AttackAnim.Num());
+	int32 index = FMath::RandRange(0, AttackAnim.Num() - 1);
 	PlayAnimMontage(BlockAnim[index]);
 }
