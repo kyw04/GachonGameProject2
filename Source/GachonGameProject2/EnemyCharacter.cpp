@@ -36,7 +36,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 		if (ShowTime <= Time)
 		{
 			Time -= ShowTime + 0.1f;
-			GEngine->AddOnScreenDebugMessage(-1, 0.3f, FColor::Green, FString::Printf(TEXT("GetDistanceTo... Player Distance To Enmey: %f"), GetDistanceTo(Player)));
+			//GEngine->AddOnScreenDebugMessage(-1, 0.3f, FColor::Green, FString::Printf(TEXT("GetDistanceTo... Player Distance To Enmey: %f"), GetDistanceTo(Player)));
 		}
 	}
 	else
